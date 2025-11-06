@@ -154,10 +154,10 @@
 
 
 
-
 import React, { useState } from "react";
 import axios from "axios";
 import { useNavigate, Link } from "react-router-dom";
+import toast, { Toaster } from "react-hot-toast";
 
 export default function Register() {
   const navigate = useNavigate();
@@ -171,7 +171,7 @@ export default function Register() {
       );
 
       if (existingUsers.length > 0) {
-        alert("Email already registered!");
+        toast.error("Email already registered!", { duration: 2000 });
         return;
       }
 
@@ -181,19 +181,24 @@ export default function Register() {
         status: "active",
       });
 
-      alert("Registered successfully!");
-      navigate("/login");
+      toast.success("Registered successfully!", { duration: 1500 });
+
+      
+      setTimeout(() => navigate("/login"), 1500);
     } catch (err) {
       console.error("Registration failed:", err);
-      alert("Registration failed!");
+      toast.error("Registration failed! Please try again.");
     }
   };
 
   return (
     <div className="flex items-center justify-center h-screen w-screen bg-gradient-to-br from-gray-50 to-blue-100">
+      
+      <Toaster position="top-center" reverseOrder={false} />
+
       <div className="bg-white shadow-lg rounded-2xl w-full max-w-md p-10">
         <h2 className="text-3xl font-bold text-center text-gray-800 mb-6">
-          Create Account 
+          Create Account
         </h2>
         <form onSubmit={handleRegister} className="space-y-4">
           <input
@@ -234,4 +239,3 @@ export default function Register() {
     </div>
   );
 }
-

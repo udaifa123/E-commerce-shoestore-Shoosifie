@@ -13,6 +13,7 @@ export default function ProductDetail() {
   const [selectedImage, setSelectedImage] = useState("");
   const [isFav, setIsFav] = useState(false);
 
+  // 🟢 Load main product
   useEffect(() => {
     axios
       .get(`http://localhost:5000/products/${id}`)
@@ -25,7 +26,7 @@ export default function ProductDetail() {
       .catch((err) => console.error(err));
   }, [id]);
 
-  
+  // 🟢 Load related products (same category)
   useEffect(() => {
     if (product) {
       axios
@@ -35,7 +36,7 @@ export default function ProductDetail() {
     }
   }, [product]);
 
-  
+  // ❤️ Toggle Favorite
   const toggleFavorite = () => {
     const favs = JSON.parse(localStorage.getItem("favorites")) || [];
     const exists = favs.find((item) => item.id === product.id);
@@ -55,50 +56,49 @@ export default function ProductDetail() {
     });
   };
 
-
+  // 🛒 Add to Cart
   const handleAddToCart = () => {
-  if (!selectedSize) {
+    if (!selectedSize) {
+      Swal.fire({
+        icon: "warning",
+        title: "Select Size",
+        text: "Please choose a size before adding to cart!",
+      });
+      return;
+    }
+
+    const user = JSON.parse(localStorage.getItem("user"));
+    if (!user || !user.email) {
+      Swal.fire({
+        icon: "info",
+        title: "Login Required",
+        text: "Please log in to continue shopping.",
+      }).then(() => navigate("/login"));
+      return;
+    }
+
+    const allCarts = JSON.parse(localStorage.getItem("cart")) || {};
+    const userKey = user.email;
+    const userCart = allCarts[userKey] || [];
+
+    const existing = userCart.find(
+      (i) => i.id === product.id && i.size === selectedSize
+    );
+
+    if (existing) existing.quantity += 1;
+    else userCart.push({ ...product, size: selectedSize, quantity: 1 });
+
+    allCarts[userKey] = userCart;
+    localStorage.setItem("cart", JSON.stringify(allCarts));
+
     Swal.fire({
-      icon: "warning",
-      title: "Select Size",
-      text: "Please choose a size before adding to cart!",
+      icon: "success",
+      title: "Added to Cart",
+      text: `${product.name} (Size: ${selectedSize}) added to your cart!`,
+      timer: 1200,
+      showConfirmButton: false,
     });
-    return;
-  }
-
-  const user = JSON.parse(localStorage.getItem("user"));
-  if (!user || !user.email) {
-    Swal.fire({
-      icon: "info",
-      title: "Login Required",
-      text: "Please log in to continue shopping.",
-    }).then(() => navigate("/login"));
-    return;
-  }
-
-  const allCarts = JSON.parse(localStorage.getItem("cart")) || {};
-  const userKey = user.email;
-  const userCart = allCarts[userKey] || [];
-
-  
-  const existing = userCart.find(
-    (i) => i.id === product.id && i.size === selectedSize
-  );
-
-  if (existing) existing.quantity += 1;
-  else userCart.push({ ...product, size: selectedSize, quantity: 1 });
-
-  allCarts[userKey] = userCart;
-  localStorage.setItem("cart", JSON.stringify(allCarts));
-
-  Swal.fire({
-    icon: "success",
-    title: "Added to Cart",
-    text: `${product.name} (Size: ${selectedSize}) added to your cart!`,
-    timer: 1200,
-    showConfirmButton: false,
-  });
-};
+  };
 
   if (!product)
     return <p className="text-center mt-10 font-urbanist">Loading...</p>;
@@ -108,7 +108,7 @@ export default function ProductDetail() {
   return (
     <div className="min-h-screen bg-gray-50 py-10 px-6 font-urbanist">
       <div className="max-w-6xl mx-auto bg-white shadow-xl rounded-2xl p-8 grid grid-cols-1 md:grid-cols-2 gap-10">
-        
+        {/* ✅ Product Image Section */}
         <div className="flex flex-col items-center relative group">
           <button
             onClick={toggleFavorite}
@@ -121,6 +121,7 @@ export default function ProductDetail() {
             )}
           </button>
 
+          {/* Variants */}
           <div className="flex gap-3 mb-4 justify-center">
             {product.variants?.map((variant, index) => (
               <button
@@ -141,6 +142,7 @@ export default function ProductDetail() {
             ))}
           </div>
 
+          {/* Main Image */}
           <div className="w-full max-w-md aspect-square bg-gray-100 rounded-lg overflow-hidden group relative">
             <img
               src={selectedImage}
@@ -150,7 +152,7 @@ export default function ProductDetail() {
           </div>
         </div>
 
-        
+        {/* ✅ Product Details Section */}
         <div>
           <h2 className="text-3xl font-bold mb-2">{product.name}</h2>
           <div className="flex items-center gap-2 mb-3">
@@ -176,7 +178,7 @@ export default function ProductDetail() {
           </p>
           <p className="text-gray-700 mb-6">{product.description}</p>
 
-        
+          {/* Size Selector */}
           <div className="mb-5">
             <p className="font-semibold mb-2">Select Size:</p>
             <div className="flex gap-2 flex-wrap">
@@ -196,7 +198,6 @@ export default function ProductDetail() {
             </div>
           </div>
 
-      
           <button
             onClick={handleAddToCart}
             className="px-5 py-2 bg-black text-white rounded-lg hover:bg-gray-800 transition"
@@ -206,7 +207,7 @@ export default function ProductDetail() {
         </div>
       </div>
 
-
+      {/* ✅ Related Products Section */}
       {related.length > 0 && (
         <div className="max-w-6xl mx-auto mt-16">
           <h3 className="text-2xl font-semibold mb-6">You Might Also Like</h3>
@@ -215,15 +216,24 @@ export default function ProductDetail() {
               <div
                 key={item.id}
                 onClick={() => navigate(`/product/${item.id}`)}
-                className="border rounded-lg p-3 shadow hover:shadow-lg cursor-pointer transition"
+                className="cursor-pointer bg-white rounded-2xl shadow-md hover:shadow-xl transition overflow-hidden group"
               >
-                <img
-                  src={item.image}
-                  alt={item.name}
-                  className="w-full h-40 object-contain mb-2"
-                />
-                <h4 className="font-medium truncate">{item.name}</h4>
-                <p className="text-gray-600 text-sm">₹{item.price}</p>
+                {/* Image same feel as main */}
+                <div className="bg-gray-100 aspect-square flex items-center justify-center overflow-hidden">
+                  <img
+                    src={item.image}
+                    alt={item.name}
+                    className="object-contain w-4/5 h-4/5 transition-transform duration-300 ease-in-out group-hover:scale-110"
+                  />
+                </div>
+
+                {/* Info */}
+                <div className="p-4 text-center">
+                  <h4 className="font-semibold text-gray-800 truncate mb-1">
+                    {item.name}
+                  </h4>
+                  <p className="text-gray-600 font-medium">₹{item.price}</p>
+                </div>
               </div>
             ))}
           </div>

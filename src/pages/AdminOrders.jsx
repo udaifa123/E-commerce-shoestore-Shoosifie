@@ -1,26 +1,24 @@
 import { useEffect, useState } from "react";
-import { FaTrash, FaChevronDown, FaChevronUp } from "react-icons/fa";
+import { FaTrash, FaEye, FaEyeSlash } from "react-icons/fa";
 
-const API_URL = "http://localhost:5000/orders"; 
+const API_URL = "http://localhost:5000/orders";
 
 export default function AdminOrders() {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [totalRevenue, setTotalRevenue] = useState(0);
-  const [expanded, setExpanded] = useState(null); 
+  const [expanded, setExpanded] = useState(null);
 
   useEffect(() => {
     fetchOrders();
   }, []);
 
-  
   const fetchOrders = async () => {
     try {
       const res = await fetch(API_URL);
       const data = await res.json();
 
       const validOrders = Array.isArray(data) ? data : [];
-
       setOrders(validOrders);
 
       const total = validOrders.reduce((sum, o) => sum + Number(o.total || 0), 0);
@@ -31,7 +29,6 @@ export default function AdminOrders() {
       setLoading(false);
     }
   };
-
 
   const handleStatusChange = async (id, newStatus) => {
     try {
@@ -50,7 +47,6 @@ export default function AdminOrders() {
     }
   };
 
-
   const handleDelete = async (id) => {
     try {
       await fetch(`${API_URL}/${id}`, { method: "DELETE" });
@@ -60,14 +56,13 @@ export default function AdminOrders() {
     }
   };
 
-  
   const toggleExpand = (id) => {
     setExpanded(expanded === id ? null : id);
   };
 
   return (
     <div className="p-8 max-w-7xl mx-auto font-[Inter]">
-      
+      {/* Header */}
       <div className="mb-8">
         <h2 className="text-4xl font-semibold text-gray-900 tracking-tight mb-1">
           Manage Orders
@@ -77,7 +72,7 @@ export default function AdminOrders() {
         </p>
       </div>
 
-  
+      {/* Summary Cards */}
       <div className="grid md:grid-cols-2 gap-6 mb-10">
         <div className="p-6 rounded-2xl bg-gradient-to-br from-green-50 to-green-100 border border-green-200 shadow-sm hover:shadow-md transition">
           <h3 className="text-gray-800 font-medium text-sm">Total Revenue</h3>
@@ -92,7 +87,7 @@ export default function AdminOrders() {
         </div>
       </div>
 
-  
+      {/* Orders Table */}
       <div className="overflow-x-auto bg-white/70 backdrop-blur-md shadow-xl border border-gray-200 rounded-2xl">
         <table className="min-w-full text-sm">
           <thead className="bg-gray-100/70 text-gray-600 uppercase text-xs font-semibold tracking-wide">
@@ -130,6 +125,8 @@ export default function AdminOrders() {
                       {o.status || "Pending"}
                     </span>
                   </td>
+
+                  {/* Action Buttons */}
                   <td className="py-4 px-6 text-center flex justify-center gap-3">
                     <select
                       value={o.status || "Pending"}
@@ -152,14 +149,14 @@ export default function AdminOrders() {
                     <button
                       onClick={() => toggleExpand(o.id)}
                       className="text-gray-600 hover:text-black transition text-lg"
-                      title="Show Products"
+                      title={expanded === o.id ? "Hide Details" : "View Details"}
                     >
-                      {expanded === o.id ? <FaChevronUp /> : <FaChevronDown />}
+                      {expanded === o.id ? <FaEyeSlash /> : <FaEye />}
                     </button>
                   </td>
                 </tr>
 
-                
+                {/* Expanded Order Products */}
                 {expanded === o.id && o.items && o.items.length > 0 && (
                   <tr className="bg-gray-50">
                     <td colSpan="5" className="py-4 px-10">
@@ -187,16 +184,13 @@ export default function AdminOrders() {
           </tbody>
         </table>
 
-        
         {loading && (
           <div className="py-8 text-center text-gray-500">
             Loading orders...
           </div>
         )}
         {!loading && orders.length === 0 && (
-          <div className="py-8 text-center text-gray-500">
-            No orders found.
-          </div>
+          <div className="py-8 text-center text-gray-500">No orders found.</div>
         )}
       </div>
     </div>

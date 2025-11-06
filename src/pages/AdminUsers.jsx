@@ -89,7 +89,7 @@ export default function AdminUsers() {
         </p>
       </div>
 
-    
+      {/* Table Section */}
       <div className="overflow-x-auto bg-white shadow-xl border border-gray-200 rounded-2xl">
         <table className="min-w-full text-sm">
           <thead className="bg-gradient-to-r from-gray-100 to-gray-200 text-gray-700 uppercase text-xs">
@@ -122,7 +122,6 @@ export default function AdminUsers() {
                   )}
                 </td>
                 <td className="py-4 px-6 flex justify-center gap-5 text-lg text-gray-700">
-                  
                   <button
                     onClick={() => handleView(u.id)}
                     className="hover:text-indigo-600 transition"
@@ -131,7 +130,6 @@ export default function AdminUsers() {
                     <FaEye />
                   </button>
 
-                  
                   <button
                     onClick={() => handleBlockToggle(u.id, u.blocked)}
                     className="hover:text-yellow-600 transition"
@@ -140,7 +138,6 @@ export default function AdminUsers() {
                     {u.blocked ? <FaUnlock /> : <FaBan />}
                   </button>
 
-                
                   <button
                     onClick={() => handleDelete(u.id)}
                     className="hover:text-red-600 transition"
@@ -159,14 +156,14 @@ export default function AdminUsers() {
         )}
       </div>
 
-      
+      {/* Transparent Modal */}
       {modalOpen && selectedUser && (
-        <div className="fixed inset-0 bg-white bg-opacity-40 flex items-center justify-center z-50">
-          <div className="bg-gradient-to-r from-black to-indigo-500 text-white rounded-2xl shadow-2xl w-96 p-6 relative animate-fadeIn">
-            <h3 className="text-xl font-bold mb-4 border-b pb-2">
+        <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50">
+          <div className="bg-white/10 border border-white/20 backdrop-blur-lg text-white rounded-2xl shadow-2xl w-96 p-6 relative animate-fadeIn">
+            <h3 className="text-xl font-bold mb-4 border-b border-white/20 pb-2">
               User Details
             </h3>
-            <div className="space-y-2 text-sm text-white">
+            <div className="space-y-2 text-sm">
               <p>
                 <strong>Name:</strong> {selectedUser.name}
               </p>
@@ -185,7 +182,7 @@ export default function AdminUsers() {
             <div className="mt-5 text-right">
               <button
                 onClick={() => setModalOpen(false)}
-                className="bg-gradient-to-r from-black to-indigo-500 text-white px-4 py-2 rounded-md text-sm transition"
+                className="bg-white/20 hover:bg-white/30 border border-white/30 text-white px-4 py-2 rounded-md text-sm transition"
               >
                 Close
               </button>
