@@ -2,11 +2,13 @@ import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/vite'
 
+// https://vite.dev/config/
 export default defineConfig({
-  plugins: [tailwindcss(), react()],
+  plugins: [react(), tailwindcss()],
   build: {
     rollupOptions: {
-      external: ['sweetalert2', 'lucide-react'], // ✅ added lucide-react
+      // ❌ Don't list 'lucide-react' here
+      external: [],
     },
   },
 })
