@@ -453,7 +453,8 @@
       "email": "hasna@gmail.com",
       "password": "hasna",
       "role": "user",
-      "status": "active"
+      "status": "active",
+      "active": false
     },
     {
       "id": "18e9",
@@ -533,6 +534,15 @@
       "email": "ubaid@gmail.com",
       "password": "ub@id123",
       "role": "user",
+      "status": "active",
+      "blocked": false
+    },
+    {
+      "id": "6572",
+      "name": "shahana",
+      "email": "shahana@gmail.com",
+      "password": "shahana123",
+      "role": "user",
       "status": "active"
     }
   ],
@@ -556,7 +566,7 @@
       ],
       "total": 16995,
       "date": "2025-11-02T13:25:52.011Z",
-      "status": "Pending"
+      "status": "Delivered"
     },
     {
       "id": "1762090143387",
